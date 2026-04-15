@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wobble — We gave Earth a choice.</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo">WOBBLE</div>
+    <div class="nav-right">
+      <span class="tag">global experiment</span>
+      <span class="timer" id="timer">Day 1 · 00:00:00</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <main class="hero">
+
+    <p class="experiment-label">global social experiment</p>
+    <h1 class="headline">
+      We gave Earth a choice.<br>
+      <span>What did humanity decide?</span>
+    </h1>
+
+    <!-- 실시간 카운터 -->
+    <div class="counter-bar">
+      <div class="counter">
+        <div class="counter-num heal" id="heal-count">0</div>
+        <div class="counter-label">healed</div>
+      </div>
+      <div class="vs">vs</div>
+      <div class="counter">
+        <div class="counter-num harm" id="harm-count">0</div>
+        <div class="counter-label">harmed</div>
+      </div>
+    </div>
+
+    <!-- 현재 상태 메시지 -->
+    <div class="earth-status" id="status-msg">Experiment is just beginning...</div>
+
+    <!-- 지구 캐릭터 -->
+    <div class="earth-wrap">
+      <svg id="wobble-earth" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+          <clipPath id="ec"><circle cx="100" cy="100" r="88"/></clipPath>
+        </defs>
+        <!-- 바다 -->
+        <circle cx="100" cy="100" r="88" fill="#2a4a6a" id="ocean"/>
+        <!-- 대륙 -->
+        <g clip-path="url(#ec)">
+          <path d="M30 80 Q50 62 75 68 Q95 72 100 88 Q104 104 90 116 Q74 126 55 118 Q34 108 28 92 Z" fill="#2a5c3a" id="cont1"/>
+          <path d="M95 55 Q118 44 138 54 Q152 64 148 84 Q142 102 126 108 Q108 114 96 102 Q82 88 88 72 Z" fill="#2a5c3a" id="cont2"/>
+          <path d="M108 118 Q128 112 144 122 Q156 134 150 150 Q142 164 126 166 Q110 166 102 154 Q94 140 100 128 Z" fill="#2a5c3a" id="cont3"/>
+          <path d="M34 128 Q48 122 58 132 Q66 144 60 158 Q52 168 40 166 Q28 162 26 150 Q24 138 34 128 Z" fill="#2a5c3a" id="cont4"/>
+          <!-- 남극 빙하 -->
+          <ellipse cx="100" cy="182" rx="52" ry="14" fill="#3a6a8a" opacity="0.5" id="ice-s"/>
+          <!-- 북극 빙하 -->
+          <ellipse cx="100" cy="18" rx="40" ry="10" fill="#3a6a8a" opacity="0.3" id="ice-n"/>
+        </g>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#1a3a5a" stroke-width="1.5"/>
+        <!-- 눈 -->
+        <path d="M74 76 Q79 70 84 76" fill="none" stroke="#1a2a3a" stroke-width="2" stroke-linecap="round" id="eye-l"/>
+        <path d="M116 76 Q121 70 126 76" fill="none" stroke="#1a2a3a" stroke-width="2" stroke-linecap="round" id="eye-r"/>
+        <circle cx="79" cy="80" r="4" fill="#1a2a3a" id="pupil-l"/>
+        <circle cx="121" cy="80" r="4" fill="#1a2a3a" id="pupil-r"/>
+        <!-- 입 -->
+        <path d="M80 116 Q100 108 120 116" fill="none" stroke="#1a2a3a" stroke-width="2.5" stroke-linecap="round" id="mouth"/>
+        <!-- 반창고 (아픔 상태) -->
+        <rect x="112" y="88" width="26" height="11" rx="3" fill="#c8951a" id="bandage"/>
+        <line x1="112" y1="93.5" x2="138" y2="93.5" stroke="#a07010" stroke-width="0.8" id="bandage-line"/>
+      </svg>
+    </div>
+
+    <!-- HP 게이지 -->
+    <div class="hp-wrap">
+      <div class="hp-label">
+        <span>Earth HP</span>
+        <strong id="hp-text">18% · 424 ppm CO₂</strong>
+      </div>
+      <div class="hp-track">
+        <div class="hp-fill" id="hp-fill" style="width: 18%"></div>
+      </div>
+    </div>
+    <p class="co2-badge">
+      Current CO₂ <span id="co2-val">424.2 ppm</span> ·
+      <span>+52%</span> vs pre-industrial ·
+      Safe limit 350 ppm
+    </p>
+
+    <!-- 치료 버튼 -->
+    <div class="btn-section">
+      <p class="btn-title">heal the earth</p>
+      <div class="btn-grid">
+        <button class="btn-heal" onclick="handleClick('heal', 0.21)">
+          <div class="btn-icon">🚌</div>
+          <div class="btn-name">Take transit</div>
+          <div class="btn-co2-heal">-0.21 kg CO₂</div>
+        </button>
+        <button class="btn-heal" onclick="handleClick('heal', 0.50)">
+          <div class="btn-icon">🥗</div>
+          <div class="btn-name">Eat plant-based</div>
+          <div class="btn-co2-heal">-0.50 kg CO₂</div>
+        </button>
+        <button class="btn-heal" onclick="handleClick('heal', 0.10)">
+          <div class="btn-icon">🧴</div>
+          <div class="btn-name">Use a tumbler</div>
+          <div class="btn-co2-heal">-0.10 kg CO₂</div>
+        </button>
+        <button class="btn-heal" onclick="handleClick('heal', 0.18)">
+          <div class="btn-icon">🔌</div>
+          <div class="btn-name">Save electricity</div>
+          <div class="btn-co2-heal">-0.18 kg CO₂</div>
+        </button>
+        <button class="btn-heal" onclick="handleClick('heal', 0.32)">
+          <div class="btn-icon">🚲</div>
+          <div class="btn-name">Walk or cycle</div>
+          <div class="btn-co2-heal">-0.32 kg CO₂</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- 나쁜 행동 버튼 -->
+    <div class="btn-section">
+      <p class="btn-title">harm the earth</p>
+      <div class="btn-grid">
+        <button class="btn-harm" onclick="handleClick('harm', 2.40)">
+          <div class="btn-icon">🚗</div>
+          <div class="btn-name">Short car trip</div>
+          <div class="btn-co2-harm">+2.40 kg CO₂</div>
+        </button>
+        <button class="btn-harm" onclick="handleClick('harm', 5.00)">
+          <div class="btn-icon">🥩</div>
+          <div class="btn-name">Eat beef</div>
+          <div class="btn-co2-harm">+5.00 kg CO₂</div>
+        </button>
+        <button class="btn-harm" onclick="handleClick('harm', 3.00)">
+          <div class="btn-icon">👗</div>
+          <div class="btn-name">Fast fashion</div>
+          <div class="btn-co2-harm">+3.00 kg CO₂</div>
+        </button>
+        <button class="btn-harm" onclick="handleClick('harm', 1.20)">
+          <div class="btn-icon">❄️</div>
+          <div class="btn-name">Blast the A/C</div>
+          <div class="btn-co2-harm">+1.20 kg CO₂</div>
+        </button>
+        <button class="btn-harm" onclick="handleClick('harm', 0.30)">
+          <div class="btn-icon">🥡</div>
+          <div class="btn-name">Single-use plastic</div>
+          <div class="btn-co2-harm">+0.30 kg CO₂</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 하단 통계 -->
+    <div class="bottom-row">
+
+      <!-- 오늘의 현황 -->
+      <div class="stat-card">
+        <div class="stat-label">Today's results</div>
+        <div class="ratio-bar">
+          <div class="ratio-heal" id="ratio-heal" style="width: 50%"></div>
+          <div class="ratio-harm" id="ratio-harm" style="width: 50%"></div>
+        </div>
+        <div class="ratio-label">
+          <span class="heal-pct" id="heal-pct">Heal 50%</span>
+          <span class="harm-pct" id="harm-pct">Harm 50%</span>
+        </div>
+        <div class="stat-sub" id="participant-count">0 participants</div>
+      </div>
+
+      <!-- 국가별 기여 -->
+      <div class="stat-card">
+        <div class="stat-label">Top countries</div>
+        <div id="country-list">
+          <div class="country-row"><span class="country-name">—</span><span class="country-pct">—</span></div>
+        </div>
+      </div>
+
+      <!-- 기후 뉴스 -->
+      <div class="stat-card">
+        <div class="stat-label">Climate news</div>
+        <div class="news-item">
+          Arctic sea ice hits record low extent
+          <div class="news-src">NASA · Today</div>
+        </div>
+        <div class="news-item">
+          CO₂ reaches 424 ppm, monthly high
+          <div class="news-src">NOAA · Today</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  </div>
+
+  <footer class="footer-msg">
+    No limits. No censorship. Whatever happens — that is the message.<br>
+    <span class="footer-url">wobble.earth</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
