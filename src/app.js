@@ -1,41 +1,24 @@
 // ── 상수 ──────────────────────────────────────────
+const API_URL = 'https://wobble-api.chlgkrud981109.workers.dev';
 const EXPERIMENT_START = new Date('2026-04-16T00:00:00Z');
 const CURRENT_CO2_PPM  = 424.2;
-const HP_MIN_PPM       = 500;   // HP 0%
-const HP_MAX_PPM       = 350;   // HP 100%
+const HP_MIN_PPM       = 500;
+const HP_MAX_PPM       = 350;
 
-// 버튼 데이터
 const ACTIONS = {
   heal: [
-    { icon: '🚌', name: 'Take transit',      co2: 0.21 },
-    { icon: '🥗', name: 'Eat plant-based',   co2: 0.50 },
-    { icon: '🧴', name: 'Use a tumbler',     co2: 0.10 },
-    { icon: '🔌', name: 'Save electricity',  co2: 0.18 },
-    { icon: '🚲', name: 'Walk or cycle',     co2: 0.32 },
+    { icon: '🚌', name: 'Take transit',     co2: 0.21 },
+    { icon: '🥗', name: 'Eat plant-based',  co2: 0.50 },
+    { icon: '🧴', name: 'Use a tumbler',    co2: 0.10 },
+    { icon: '🔌', name: 'Save electricity', co2: 0.18 },
+    { icon: '🚲', name: 'Walk or cycle',    co2: 0.32 },
   ],
   harm: [
-    { icon: '🚗', name: 'Short car trip',       co2: 2.40 },
-    { icon: '🥩', name: 'Eat beef',             co2: 5.00 },
-    { icon: '👗', name: 'Fast fashion',         co2: 3.00 },
-    { icon: '❄️', name: 'Blast the A/C',        co2: 1.20 },
-    { icon: '🥡', name: 'Single-use plastic',   co2: 0.30 },
-  ]
-};
-
-const MODAL_MESSAGES = {
-  heal: [
-    'Your voice. 1 of 8 billion.',
-    'Small choices add up. Keep going.',
-    'The Earth noticed. Thank you.',
-    'One step forward for humanity.',
-    'Every click counts.',
-  ],
-  harm: [
-    'This happens 8 billion times a day.',
-    'The Earth felt that.',
-    'One of 8 billion voices — used.',
-    'This is the reality we live in.',
-    'The experiment continues.',
+    { icon: '🚗', name: 'Short car trip',     co2: 2.40 },
+    { icon: '🥩', name: 'Eat beef',           co2: 5.00 },
+    { icon: '👗', name: 'Fast fashion',       co2: 3.00 },
+    { icon: '❄️', name: 'Blast the A/C',      co2: 1.20 },
+    { icon: '🥡', name: 'Single-use plastic', co2: 0.30 },
   ]
 };
 
@@ -46,13 +29,11 @@ let state = {
   hp: calcHP(CURRENT_CO2_PPM),
 };
 
-// ── HP 계산 ──────────────────────────────────────
 function calcHP(ppm) {
   const hp = ((HP_MIN_PPM - ppm) / (HP_MIN_PPM - HP_MAX_PPM)) * 100;
   return Math.max(0, Math.min(100, Math.round(hp * 100) / 100));
 }
 
-// ── 타이머 ──────────────────────────────────────
 function updateTimer() {
   const now  = new Date();
   const diff = Math.floor((now - EXPERIMENT_START) / 1000);
@@ -67,14 +48,12 @@ function updateTimer() {
   document.getElementById('timer').textContent = `Day ${days} · ${hrs}:${mins}:${secs}`;
 }
 
-// ── 숫자 포맷 ──────────────────────────────────
 function fmt(n) {
   return Math.round(n).toLocaleString();
 }
 
-// ── UI 업데이트 ──────────────────────────────────
 function updateUI() {
-  const total = state.healCount + state.harmCount;
+  const total   = state.healCount + state.harmCount;
   const healPct = total > 0 ? Math.round((state.healCount / total) * 100) : 50;
   const harmPct = 100 - healPct;
 
@@ -84,21 +63,19 @@ function updateUI() {
 
   document.getElementById('ratio-heal').style.width = healPct + '%';
   document.getElementById('ratio-harm').style.width = harmPct + '%';
-  document.getElementById('heal-pct').textContent  = `Heal ${healPct}%`;
-  document.getElementById('harm-pct').textContent  = `Harm ${harmPct}%`;
+  document.getElementById('heal-pct').textContent   = `Heal ${healPct}%`;
+  document.getElementById('harm-pct').textContent   = `Harm ${harmPct}%`;
 
   const hp = state.hp;
   document.getElementById('hp-fill').style.width = hp.toFixed(1) + '%';
   document.getElementById('hp-text').textContent  = `${hp.toFixed(1)}% · ${CURRENT_CO2_PPM} ppm CO₂`;
 
-  // HP 색상
   const fill = document.getElementById('hp-fill');
-  if (hp <= 25)       fill.style.background = '#888780';
-  else if (hp <= 50)  fill.style.background = '#e08a3a';
-  else if (hp <= 75)  fill.style.background = '#4fa3e0';
-  else                fill.style.background = '#3ab87a';
+  if (hp <= 25)      fill.style.background = '#888780';
+  else if (hp <= 50) fill.style.background = '#e08a3a';
+  else if (hp <= 75) fill.style.background = '#4fa3e0';
+  else               fill.style.background = '#3ab87a';
 
-  // 상태 메시지
   const msg = document.getElementById('status-msg');
   if (total === 0) {
     msg.textContent = 'Experiment is just beginning...';
@@ -117,66 +94,53 @@ function updateUI() {
   updateEarthVisual(hp);
 }
 
-// ── 지구 캐릭터 상태 변경 ──────────────────────
 function updateEarthVisual(hp) {
-  const ocean  = document.getElementById('ocean');
-  const conts  = ['cont1','cont2','cont3','cont4'];
-  const iceS   = document.getElementById('ice-s');
-  const iceN   = document.getElementById('ice-n');
-  const mouth  = document.getElementById('mouth');
-  const eyeL   = document.getElementById('eye-l');
-  const eyeR   = document.getElementById('eye-r');
-  const bandage = document.getElementById('bandage');
+  const ocean       = document.getElementById('ocean');
+  const conts       = ['cont1','cont2','cont3','cont4'];
+  const iceS        = document.getElementById('ice-s');
+  const iceN        = document.getElementById('ice-n');
+  const mouth       = document.getElementById('mouth');
+  const eyeL        = document.getElementById('eye-l');
+  const eyeR        = document.getElementById('eye-r');
+  const bandage     = document.getElementById('bandage');
   const bandageLine = document.getElementById('bandage-line');
 
   if (hp <= 25) {
-    // 위독
     ocean.setAttribute('fill', '#3a3a4a');
     conts.forEach(id => document.getElementById(id).setAttribute('fill', '#2a2a2a'));
     mouth.setAttribute('d', 'M82 118 Q91 112 100 118 Q109 124 118 118');
     eyeL.setAttribute('d', 'M72 74 L82 80 M82 74 L72 80');
     eyeR.setAttribute('d', 'M114 74 L124 80 M124 74 L114 80');
-    eyeL.setAttribute('stroke-width', '2.5');
-    eyeR.setAttribute('stroke-width', '2.5');
     iceS.setAttribute('opacity', '0.1');
     iceN.setAttribute('opacity', '0.1');
     bandage.setAttribute('opacity', '1');
     bandageLine.setAttribute('opacity', '1');
   } else if (hp <= 50) {
-    // 아픔 (기본)
     ocean.setAttribute('fill', '#2a4a6a');
     conts.forEach(id => document.getElementById(id).setAttribute('fill', '#2a5c3a'));
     mouth.setAttribute('d', 'M80 116 Q100 108 120 116');
     eyeL.setAttribute('d', 'M74 76 Q79 70 84 76');
     eyeR.setAttribute('d', 'M116 76 Q121 70 126 76');
-    eyeL.setAttribute('stroke-width', '2');
-    eyeR.setAttribute('stroke-width', '2');
     iceS.setAttribute('opacity', '0.5');
     iceN.setAttribute('opacity', '0.3');
     bandage.setAttribute('opacity', '1');
     bandageLine.setAttribute('opacity', '1');
   } else if (hp <= 75) {
-    // 회복중
     ocean.setAttribute('fill', '#1a5a8a');
     conts.forEach(id => document.getElementById(id).setAttribute('fill', '#1a7a3a'));
     mouth.setAttribute('d', 'M80 112 Q100 124 120 112');
     eyeL.setAttribute('d', 'M74 76 Q79 70 84 76');
     eyeR.setAttribute('d', 'M116 76 Q121 70 126 76');
-    eyeL.setAttribute('stroke-width', '2');
-    eyeR.setAttribute('stroke-width', '2');
     iceS.setAttribute('opacity', '0.7');
     iceN.setAttribute('opacity', '0.6');
     bandage.setAttribute('opacity', '0');
     bandageLine.setAttribute('opacity', '0');
   } else {
-    // 건강
     ocean.setAttribute('fill', '#1a6aaa');
     conts.forEach(id => document.getElementById(id).setAttribute('fill', '#1a9a4a'));
     mouth.setAttribute('d', 'M76 110 Q100 128 124 110');
     eyeL.setAttribute('d', 'M74 78 Q79 70 84 78');
     eyeR.setAttribute('d', 'M116 78 Q121 70 126 78');
-    eyeL.setAttribute('stroke-width', '2');
-    eyeR.setAttribute('stroke-width', '2');
     iceS.setAttribute('opacity', '0.9');
     iceN.setAttribute('opacity', '0.85');
     bandage.setAttribute('opacity', '0');
@@ -184,7 +148,6 @@ function updateEarthVisual(hp) {
   }
 }
 
-// ── 플로팅 텍스트 피드백 ─────────────────────────
 function showFloatingText(type, co2) {
   const earth = document.getElementById('wobble-earth');
   const rect  = earth.getBoundingClientRect();
@@ -208,7 +171,6 @@ function showFloatingText(type, co2) {
   setTimeout(() => el.remove(), 1200);
 }
 
-// ── 클릭 핸들러 ──────────────────────────────────
 function handleClick(type, co2) {
   const HP_PER_KG = 1 / (8000000000 * 150 * 10000);
   if (type === 'heal') {
@@ -222,9 +184,9 @@ function handleClick(type, co2) {
   }
   showFloatingText(type, co2);
   updateUI();
+  sendToAPI(type, co2);
 }
 
-// ── 애니메이션 ──────────────────────────────────
 function triggerHealAnim() {
   const el = document.getElementById('wobble-earth');
   el.classList.remove('wobble-anim', 'heal-anim');
@@ -238,47 +200,57 @@ function triggerHarmAnim() {
   el.classList.add('wobble-anim');
 }
 
-// ── 모달 ──────────────────────────────────────────
-function showModal(type, co2) {
-  const action = ACTIONS[type].find(a => a.co2 === co2) || ACTIONS[type][0];
-  const msgs   = MODAL_MESSAGES[type];
-  const msg    = msgs[Math.floor(Math.random() * msgs.length)];
-  const sign   = type === 'heal' ? '-' : '+';
-
-  document.getElementById('modal-icon').textContent  = action.icon;
-  document.getElementById('modal-title').textContent = action.name;
-  document.getElementById('modal-co2').textContent   = `${sign}${co2.toFixed(2)} kg CO₂`;
-  document.getElementById('modal-co2').className     = `modal-co2 ${type}`;
-  document.getElementById('modal-msg').textContent   = msg;
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
-
-// ── SNS 공유 ──────────────────────────────────────
 function shareAction() {
-  const total    = state.healCount + state.harmCount;
-  const healPct  = total > 0 ? Math.round((state.healCount / total) * 100) : 50;
-  const text     = `I just made my choice on Wobble — the global Earth experiment.\nCurrently: Humanity heals ${healPct}% vs harms ${100 - healPct}%.\nWhat will you choose? wobble.earth #WobbleEarth`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-  window.open(twitterUrl, '_blank');
+  const total   = state.healCount + state.harmCount;
+  const healPct = total > 0 ? Math.round((state.healCount / total) * 100) : 50;
+  const text    = `I just made my choice on Wobble — the global Earth experiment.\nCurrently: Humanity heals ${healPct}% vs harms ${100 - healPct}%.\nWhat will you choose? wobble.earth #WobbleEarth`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
 }
 
-// ── API 전송 (배포 후 활성화) ──────────────────
 async function sendToAPI(type, co2) {
   try {
-    await fetch('/api/click', {
+    await fetch(`${API_URL}/api/click`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, co2 })
     });
   } catch (e) {
-    console.warn('API not available yet');
+    console.warn('API error:', e);
   }
+}
+
+async function syncGlobalState() {
+  try {
+    const res  = await fetch(`${API_URL}/api/state`);
+    const data = await res.json();
+    state.healCount = data.healCount;
+    state.harmCount = data.harmCount;
+    updateUI();
+    updateCountryList(data.topCountries);
+  } catch (e) {
+    console.warn('Sync failed:', e);
+  }
+}
+
+function updateCountryList(countries) {
+  if (!countries || countries.length === 0) return;
+  const flags = {
+    KR:'🇰🇷', US:'🇺🇸', JP:'🇯🇵', DE:'🇩🇪', GB:'🇬🇧',
+    FR:'🇫🇷', CN:'🇨🇳', IN:'🇮🇳', BR:'🇧🇷', CA:'🇨🇦',
+    AU:'🇦🇺', NL:'🇳🇱', SE:'🇸🇪', SG:'🇸🇬', MX:'🇲🇽',
+  };
+  const el = document.getElementById('country-list');
+  el.innerHTML = countries.map(c => `
+    <div class="country-row">
+      <span class="country-name">${flags[c.country] || '🌍'} ${c.country}</span>
+      <span class="country-pct">${c.healPct}% heal</span>
+    </div>
+  `).join('');
 }
 
 // ── 초기화 ──────────────────────────────────────
 updateUI();
 setInterval(updateTimer, 1000);
 updateTimer();
+setInterval(syncGlobalState, 5000);
+syncGlobalState();

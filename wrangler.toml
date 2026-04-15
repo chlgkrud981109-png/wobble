@@ -1,0 +1,10 @@
+name = "wobble-api"
+main = "workers/hp-api.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["*/1 * * * *"]
+
+[[kv_namespaces]]
+binding = "WOBBLE_KV"
+id = "74da7804001d4af7b4c7e48254f9416f"
