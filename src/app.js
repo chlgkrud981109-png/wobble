@@ -225,6 +225,11 @@ async function syncGlobalState() {
     const data = await res.json();
     state.healCount = data.healCount;
     state.harmCount = data.harmCount;
+    // 실제 CO₂ 데이터로 HP 업데이트
+    if (data.co2Ppm) {
+      document.getElementById('co2-val').textContent = data.co2Ppm.toFixed(1) + ' ppm';
+      state.hp = data.hp;
+    }
     updateUI();
     updateCountryList(data.topCountries);
   } catch (e) {
